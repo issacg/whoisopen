@@ -1,6 +1,6 @@
 {
   "name": "whoisopen",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Node.js extension to get foreground process in Windows",
   "main": "index.js",
   "scripts": {
