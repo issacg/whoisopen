@@ -4,3 +4,4 @@ bin/
 out/
 Release/
 npm-debug.log
+*.bat
