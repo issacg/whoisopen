@@ -4,7 +4,8 @@
             "<!(node -e \"require('nan')\")"
         ],
         "defines": [
-            "PSAPI_VERSION=1"
+            "PSAPI_VERSION=1",
+            "METRO_APPS=1"
         ],
         "libraries": ["-lPsapi"],
         "target_name": "whoisopen",

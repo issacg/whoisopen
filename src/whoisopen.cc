@@ -2,8 +2,27 @@
 #include <nan.h>
 #include <Windows.h>
 #include <Psapi.h>
+#ifdef METRO_APPS
+#include <Appmodel.h>
+#include <stdlib.h>
+#endif
 
-#define BUFFER 255
+#ifdef METRO_APPS
+typedef LONG WINAPI GetPackageFullNameFnType(_In_ HANDLE hProcess, _Inout_ UINT32 *packageFullNameLength,_Out_opt_ PWSTR packageFullName);
+LONG WINAPI GetPackageFullNameFn(_In_ HANDLE hProcess, _Inout_ UINT32 *packageFullNameLength,_Out_opt_ PWSTR packageFullName)
+{
+	HMODULE mod = GetModuleHandle(TEXT("Kernel32.dll"));
+	if(mod) {
+			GetPackageFullNameFnType* pfnGetPackageFullName = reinterpret_cast<GetPackageFullNameFnType*>(GetProcAddress(mod,"GetPackageFullName"));
+			if(pfnGetPackageFullName) {
+					return pfnGetPackageFullName(hProcess, packageFullNameLength, packageFullName);
+			}
+	}
+}
+#endif
+
+/* keep buffer an EVEN number */
+#define BUFFER 256
 using namespace v8;
 
 class WhoIsOpenWorker : public NanAsyncWorker {
@@ -45,6 +64,19 @@ public:
                 if (GetModuleBaseName(hProc, NULL, sz, BUFFER) == 0) {
                         WinError();
                 }
+                #ifdef METRO_APPS
+                if (lstrcmpi(sz, TEXT("wwahost.exe")) == 0) {
+                    // Windows Runtime JS app
+                    UINT32 len = BUFFER / 2;
+                    WCHAR buf[BUFFER / 2];
+                    if (GetPackageFullNameFn(hProc, &len, buf) != ERROR_SUCCESS) {
+                        WinError();
+                    } else {
+                        wcstombs(sz, buf, BUFFER);
+                    }
+
+                }
+                #endif
                 CloseHandle(hProc);
 	}
 
