@@ -13,7 +13,7 @@ LONG WINAPI GetPackageFullNameFn(_In_ HANDLE hProcess, _Inout_ UINT32 *packageFu
 {
 	HMODULE mod = GetModuleHandle(TEXT("Kernel32.dll"));
 	if(mod) {
-			GetPackageFullNameFnType* pfnGetPackageFullName = reinterpret_cast<GetPackageFullNameFnType*>(GetProcAddress(mod,"GetPackageFullName"));
+			GetPackageFullNameFnType* pfnGetPackageFullName = reinterpret_cast<GetPackageFullNameFnType*>(GetProcAddress(mod,"GetPackageFamilyName"));
 			if(pfnGetPackageFullName) {
 					return pfnGetPackageFullName(hProcess, packageFullNameLength, packageFullName);
 			}
